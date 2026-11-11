@@ -1,0 +1,8 @@
+# DNS Propagation Checker
+
+> Free, single-page tool that asks several public DNS-over-HTTPS resolvers the same question and compares their answers.
+
+Static site (no backend, no build step, no dependencies) at https://propagation.hbenali.ovh. Queries a domain's A, AAAA, CNAME, MX, NS, TXT, SOA or CAA record through Google, Cloudflare, DNS.SB and AliDNS from the browser, shows status, records, TTL and response time per resolver, highlights answers that differ from the majority, and can check each resolver against an expected value. Resolvers share anycast caches, so this is a coarse view, not a global one. URL parameters: `?domain=&type=&expect=`.
+
+## Pages
+- [DNS Propagation Checker](https://propagation.hbenali.ovh/): the tool itself.

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://propagation.hbenali.ovh/sitemap.xml

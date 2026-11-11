@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNS Propagation Checker — Compare Public DNS Resolvers</title>
+  <meta name="description" content="Free DNS propagation checker. Query the same record through several public DNS-over-HTTPS resolvers, compare answers, TTLs and response times, and check them against the value you expect.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://propagation.hbenali.ovh/">
+
+  <!-- Security (static hosting: no custom HTTP headers, so CSP/referrer are set here; X-Frame-Options/X-Content-Type-Options need a real header and aren't achievable via meta) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://dns.google https://cloudflare-dns.com https://dns.sb https://dns.alidns.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="DNS Propagation Checker — Compare Public DNS Resolvers">
+  <meta property="og:description" content="Compare one DNS record across public DNS-over-HTTPS resolvers and see whether a change has propagated.">
+  <meta property="og:url" content="https://propagation.hbenali.ovh/">
+  <meta property="og:site_name" content="DNS Propagation Checker">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://propagation.hbenali.ovh/favicon.svg">
+  <meta property="og:image:type" content="image/svg+xml">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="DNS Propagation Checker — Compare Public DNS Resolvers">
+  <meta name="twitter:description" content="Compare one DNS record across public DNS-over-HTTPS resolvers and see whether a change has propagated.">
+  <meta name="twitter:image" content="https://propagation.hbenali.ovh/favicon.svg">
+
+  <!-- SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0c1218" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f4efe4" media="(prefers-color-scheme: light)">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DNS Propagation Checker">
+
+  <!-- resolvers are only hit on-demand after a check -->
+  <link rel="dns-prefetch" href="https://dns.google">
+  <link rel="dns-prefetch" href="https://cloudflare-dns.com">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "url": "https://propagation.hbenali.ovh/",
+        "name": "DNS Propagation Checker",
+        "description": "Free DNS propagation checker comparing public DNS-over-HTTPS resolvers.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://propagation.hbenali.ovh/?domain={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "WebApplication",
+        "name": "DNS Propagation Checker",
+        "url": "https://propagation.hbenali.ovh/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "description": "Query one DNS record through several public DNS-over-HTTPS resolvers and compare the answers, TTLs and response times.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    ]
+  }
+  </script>
+
+
+  <link rel="preload" href="/fonts/big-shoulders-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/newsreader-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/site.css">
+</head>
+
+<body>
+<a class="skip" href="#domainInput">Skip to the tool</a>
+<header class="hero">
+  <div class="wrap">
+    <h1 class="display">
+      <span class="line"><span>DNS</span></span>
+      <span class="line"><span>propagation check</span></span>
+    </h1>
+    <p class="lead">Ask several public resolvers the <strong>same question</strong> and see whether they agree on the answer.</p>
+  </div>
+</header>
+
+<main>
+  <section class="block wrap" aria-labelledby="lookupTitle">
+    <h2 class="block-title" id="lookupTitle">Compare a record across resolvers</h2>
+
+    <form id="lookupForm" class="field input-group" novalidate>
+      <div class="field-grid">
+        <div class="cell">
+          <label for="domainInput"><span>Domain name</span><i>example.com</i></label>
+          <div class="field-row domain-input-wrapper">
+            <input type="text" id="domainInput" placeholder="e.g. example.com" value="example.com" spellcheck="false" autocomplete="off" autocapitalize="off">
+          </div>
+        </div>
+        <div class="cell">
+          <label for="typeSelect"><span>Record type</span></label>
+          <div class="field-row"><select id="typeSelect"></select></div>
+        </div>
+      </div>
+      <div class="cell">
+        <label for="expectInput"><span>Expected value</span><i>optional, e.g. 93.184.216.34</i></label>
+        <div class="field-row">
+          <input type="text" id="expectInput" placeholder="the value you published" spellcheck="false" autocomplete="off" autocapitalize="off">
+        </div>
+      </div>
+      <div class="actions form-actions">
+        <button class="btn" id="checkBtn" type="submit">
+          <span id="btnText">Check propagation</span>
+          <span id="btnLoader" hidden></span>
+        </button>
+        <label class="auto" for="autoRefresh">
+          <input type="checkbox" id="autoRefresh">
+          <span>Re-check every 30 s</span>
+        </label>
+        <span class="auto-note" id="autoNote" aria-hidden="true"></span>
+      </div>
+    </form>
+
+    <div class="result-area" id="resultContainer" aria-live="polite">
+      <div class="state empty empty-state" id="placeholderState">
+        <p>Enter a domain, pick a record type and click "Check propagation".<br>Add the value you expect to see which resolvers already return it.</p>
+      </div>
+      <div id="recordsContainer" hidden></div>
+      <div id="errorContainer" hidden></div>
+    </div>
+  </section>
+
+  <section class="block wrap" aria-labelledby="howTitle">
+    <h2 class="block-title" id="howTitle">What this can and cannot tell you</h2>
+    <p class="block-note">Your browser sends each question to the resolver's DNS-over-HTTPS endpoint, so it can only use resolvers that allow requests from web pages. Each of them is an anycast service with caches shared across many locations. You do not choose which node answers, and you cannot query a domain's authoritative servers from here. Treat the table as a coarse view, not a global one. A change that shows everywhere here can still be stale elsewhere, and a difference can also be geo-DNS or round-robin rather than propagation.</p>
+  </section>
+</main>
+
+<div class="foot">
+  <footer>
+    <span>using <strong>Google, Cloudflare, DNS.SB and AliDNS over HTTPS</strong></span>
+    <span>compare DNS answers across public resolvers</span>
+    <a href="https://hbenali.ovh" target="_blank" rel="noopener noreferrer">hbenali.ovh</a>
+  </footer>
+</div>
+
+<script src="/app.js" defer></script>
+</body>
+</html>
